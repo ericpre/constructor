@@ -69,14 +69,14 @@ Function mui_AnaCustomOptions_Show
     ${Else}
         StrCpy $1 "the system"
     ${EndIf}
-    ${NSD_CreateCheckbox} 20u 13u 240u 10u \
+    ${NSD_CreateCheckbox} 20u 13u 250u 10u \
         "Add ${NAME} to $1 &PATH environment variable"
     Pop $mui_AnaCustomOptions.AddToPath
 
     ${NSD_SetState} $mui_AnaCustomOptions.AddToPath $Ana_AddToPath_State
     ${NSD_OnClick} $mui_AnaCustomOptions.AddToPath AddToPath_OnClick
 
-    ${NSD_CreateLabel} 20u 25u 240u 38u \
+    ${NSD_CreateLabel} 20u 23u 250u 38u \
         "Not recommended. Instead, open ${NAME} with the Windows Start$\n\
          menu and select $\"Anaconda (${ARCH})$\". This $\"add to PATH$\" option makes$\n\
          ${NAME} get found before previously installed software, but may$\n\
@@ -88,7 +88,7 @@ Function mui_AnaCustomOptions_Show
     ${Else}
         StrCpy $1 "the system"
     ${EndIf}
-    ${NSD_CreateCheckbox} 20u 63u 240u 10u \
+    ${NSD_CreateCheckbox} 20u 61u 250u 10u \
         "&Register ${NAME} as $1 Python ${PY_VER}"
     Pop $mui_AnaCustomOptions.RegisterSystemPython
     ${NSD_SetState} $mui_AnaCustomOptions.RegisterSystemPython \
@@ -96,7 +96,7 @@ Function mui_AnaCustomOptions_Show
     ${NSD_OnClick} $mui_AnaCustomOptions.RegisterSystemPython \
                    RegisterSystemPython_OnClick
 
-    ${NSD_CreateLabel} 20u 73u 240u 30u \
+    ${NSD_CreateLabel} 20u 71u 250u 28u \
         "This will allow other programs, such as Python Tools for Visual Studio \
          $\nPyCharm, Wing IDE, PyDev, and MSI binary packages, to automatically \
          $\ndetect ${NAME} as the primary Python ${PY_VER} on the system."
@@ -104,14 +104,17 @@ Function mui_AnaCustomOptions_Show
 
     ${If} "${POST_INSTALL_DESC}" != ""
         # Make this to display only when necessary
-        ${NSD_CreateCheckbox} 20u 103u 240u 10u \
-            "Do not run the post installion script."
+        ${NSD_CreateCheckbox} 20u 99u 250u 10u \
+            "Do not run the post installation script"
         Pop $mui_AnaCustomOptions.NoScripts
+
         ${NSD_SetState} $mui_AnaCustomOptions.NoScripts $Ana_NoScripts_State
         ${NSD_OnClick} $mui_AnaCustomOptions.NoScripts NoScripts_OnClick
 
-        ${NSD_CreateLabel} 20u 115u 240u 18u "${POST_INSTALL_DESC}"
+        ${NSD_CreateLabel} 20u 109u 250u 28u \
+            "${POST_INSTALL_DESC}"
         Pop $Ana_NoScripts_Label
+
     ${EndIf}
 
     nsDialogs::Show
@@ -175,6 +178,15 @@ FunctionEnd
 Function NoScripts_OnClick
     Pop $0
     ${NSD_GetState} $0 $Ana_NoScripts_State
+
+    ShowWindow $Ana_NoScripts_Label ${SW_HIDE}
+    ${NSD_GetState} $0 $Ana_NoScripts_State
+    ${If} $Ana_NoScripts_State == ${BST_UNCHECKED}
+        SetCtlColors $Ana_NoScripts_Label 000000 transparent
+    ${Else}
+        SetCtlColors $Ana_NoScripts_Label ff0000 transparent
+    ${EndIf}
+    ShowWindow $Ana_NoScripts_Label ${SW_SHOW}
 
 FunctionEnd
 
