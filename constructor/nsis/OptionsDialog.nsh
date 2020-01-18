@@ -9,13 +9,16 @@ Var mui_AnaCustomOptions
 
 Var mui_AnaCustomOptions.AddToPath
 Var mui_AnaCustomOptions.RegisterSystemPython
+Var mui_AnaCustomOptions.NoScripts
 
 # These are the checkbox states, to be used by the installer
 Var Ana_AddToPath_State
 Var Ana_RegisterSystemPython_State
+Var Ana_NoScripts_State
 
 Var Ana_AddToPath_Label
 Var Ana_RegisterSystemPython_Label
+Var Ana_NoScripts_Label
 
 Function mui_AnaCustomOptions_InitDefaults
     # Initialize defaults
@@ -32,6 +35,9 @@ Function mui_AnaCustomOptions_InitDefaults
         ${Else}
             StrCpy $Ana_RegisterSystemPython_State ${BST_CHECKED}
         ${EndIf}
+    ${EndIf}
+    ${If} $Ana_NoScripts_State == ""
+        StrCpy $Ana_NoScripts_State ${BST_UNCHECKED}
     ${EndIf}
 FunctionEnd
 
@@ -55,7 +61,7 @@ Function mui_AnaCustomOptions_Show
         "Advanced Installation Options" \
         "Customize how ${NAME} integrates with Windows"
 
-    ${NSD_CreateGroupBox} 0u 0u 100% 120u "Advanced Options"
+    ${NSD_CreateGroupBox} 0u 0u 100% 140u "Advanced Options"
     Pop $0
 
     ${If} $InstMode = ${JUST_ME}
@@ -63,14 +69,14 @@ Function mui_AnaCustomOptions_Show
     ${Else}
         StrCpy $1 "the system"
     ${EndIf}
-    ${NSD_CreateCheckbox} 20u 15u 240u 10u \
+    ${NSD_CreateCheckbox} 20u 13u 240u 10u \
         "Add ${NAME} to $1 &PATH environment variable"
     Pop $mui_AnaCustomOptions.AddToPath
 
     ${NSD_SetState} $mui_AnaCustomOptions.AddToPath $Ana_AddToPath_State
     ${NSD_OnClick} $mui_AnaCustomOptions.AddToPath AddToPath_OnClick
 
-    ${NSD_CreateLabel} 20u 27u 240u 40u \
+    ${NSD_CreateLabel} 20u 25u 240u 38u \
         "Not recommended. Instead, open ${NAME} with the Windows Start$\n\
          menu and select $\"Anaconda (${ARCH})$\". This $\"add to PATH$\" option makes$\n\
          ${NAME} get found before previously installed software, but may$\n\
@@ -82,7 +88,7 @@ Function mui_AnaCustomOptions_Show
     ${Else}
         StrCpy $1 "the system"
     ${EndIf}
-    ${NSD_CreateCheckbox} 20u 70u 240u 10u \
+    ${NSD_CreateCheckbox} 20u 63u 240u 10u \
         "&Register ${NAME} as $1 Python ${PY_VER}"
     Pop $mui_AnaCustomOptions.RegisterSystemPython
     ${NSD_SetState} $mui_AnaCustomOptions.RegisterSystemPython \
@@ -90,11 +96,23 @@ Function mui_AnaCustomOptions_Show
     ${NSD_OnClick} $mui_AnaCustomOptions.RegisterSystemPython \
                    RegisterSystemPython_OnClick
 
-    ${NSD_CreateLabel} 20u 82u 240u 30u \
+    ${NSD_CreateLabel} 20u 73u 240u 30u \
         "This will allow other programs, such as Python Tools for Visual Studio \
          $\nPyCharm, Wing IDE, PyDev, and MSI binary packages, to automatically \
          $\ndetect ${NAME} as the primary Python ${PY_VER} on the system."
     Pop $Ana_RegisterSystemPython_Label
+
+    ${If} "${POST_INSTALL_DESC}" != ""
+        # Make this to display only when necessary
+        ${NSD_CreateCheckbox} 20u 103u 240u 10u \
+            "Do not run the post installion script."
+        Pop $mui_AnaCustomOptions.NoScripts
+        ${NSD_SetState} $mui_AnaCustomOptions.NoScripts $Ana_NoScripts_State
+        ${NSD_OnClick} $mui_AnaCustomOptions.NoScripts NoScripts_OnClick
+
+        ${NSD_CreateLabel} 20u 115u 240u 18u "${POST_INSTALL_DESC}"
+        Pop $Ana_NoScripts_Label
+    ${EndIf}
 
     nsDialogs::Show
 FunctionEnd
@@ -153,3 +171,10 @@ KeepSettingLabel:
         ${EndIf}
     ${EndIf}
 FunctionEnd
+
+Function NoScripts_OnClick
+    Pop $0
+    ${NSD_GetState} $0 $Ana_NoScripts_State
+
+FunctionEnd
+
