@@ -246,6 +246,14 @@ the "Do not run post install script" checkbox in the windows installer.
 If used and not an empty string, the "Do not run post install script" 
 checkbox will be displayed with this label.
 
+## `pre_uninstall`
+
+required: False
+
+argument type(s): ``str``, 
+
+Path to a pre uninstall (.bat for Windows) script. Only supported on Windows.
+
 ## `welcome_image`
 
 required: False
